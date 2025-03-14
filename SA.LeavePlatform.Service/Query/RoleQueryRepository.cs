@@ -40,6 +40,9 @@ namespace SA.LeavePlatform.Service.Query
         public async Task UpdateRoleAsync(Role role)
         {
             dbContext.Roles.Update(role);
+
+            dbContext.Entry(role).Property(e => e.Id).IsModified = false;
+
             await dbContext.SaveChangesAsync();
         }
 

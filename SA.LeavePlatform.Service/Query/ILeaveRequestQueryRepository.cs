@@ -9,5 +9,7 @@ namespace SA.LeavePlatform.Service.Query
         Task AddLeaveRequestAsync(LeaveRequest leaveRequest);
         Task<LeaveRequest> GetByIdAsync(int id); // Add this method
         Task DeleteLeaveRequestAsync(int id); // Add this method
+        Task UpdateLeaveRequestAsync(LeaveRequest leaveRequest);
+
     }
 }

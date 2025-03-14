@@ -9,5 +9,7 @@ namespace SA.LeavePlatform.Service.Query
         Task AddLeaveTypeAsync(LeaveType leaveType);
         Task<LeaveType> GetByIdAsync(int id); // Add this method
         Task DeleteLeaveTypeAsync(int id); // Add this method
+        Task UpdateLeaveTypeAsync(LeaveType leaveType);
+
     }
 }

@@ -24,6 +24,14 @@ namespace SA.LeavePlatform.Service.Query
         {
             return await dbContext.LeaveTypes.FindAsync(id) ?? throw new KeyNotFoundException("Leave type not found");
         }
+        public async Task UpdateLeaveTypeAsync(LeaveType leaveType)
+        {
+            dbContext.LeaveTypes.Update(leaveType);
+
+            dbContext.Entry(leaveType).Property(e => e.Id).IsModified = false;
+
+            await dbContext.SaveChangesAsync();
+        }
 
         public async Task DeleteLeaveTypeAsync(int id)
         {

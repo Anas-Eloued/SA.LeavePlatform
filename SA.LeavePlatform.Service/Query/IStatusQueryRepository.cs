@@ -9,6 +9,8 @@ namespace SA.LeavePlatform.Service.Query
         Task AddStatusAsync(Status status);
         Task<Status> GetByIdAsync(int id); // Add this method
         Task DeleteStatusAsync(int id); // Add this method
+        Task UpdateStatusAsync(Status status);
+
 
     }
 }

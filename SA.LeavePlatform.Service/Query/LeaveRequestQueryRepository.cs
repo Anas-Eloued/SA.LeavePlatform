@@ -33,6 +33,15 @@ namespace SA.LeavePlatform.Service.Query
         {
             return await dbContext.LeaveRequests.FindAsync(id) ?? throw new KeyNotFoundException("Leave Request not found");
         }
+        public async Task UpdateLeaveRequestAsync(LeaveRequest leaveRequest)
+        {
+            dbContext.LeaveRequests.Update(leaveRequest);
+
+            // S'assurer que l'ID n'est pas modifié
+            dbContext.Entry(leaveRequest).Property(e => e.Id).IsModified = false;
+
+            await dbContext.SaveChangesAsync();
+        }
 
         public async Task DeleteLeaveRequestAsync(int id)
         {
