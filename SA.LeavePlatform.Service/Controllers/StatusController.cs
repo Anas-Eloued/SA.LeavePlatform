@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SA.LeavePlatform.Domain.Entities;
+using SA.LeavePlatform.Service.MediatRrequests.StatusRequests;
 using SA.LeavePlatform.Service.Query;
 
 namespace SA.LeavePlatform.Service.Controllers
@@ -9,47 +11,64 @@ namespace SA.LeavePlatform.Service.Controllers
     [ApiController]
     public class StatusController : ControllerBase
     {
-        private readonly IStatusQueryRepository _repository;
-        public StatusController(IStatusQueryRepository repository)
-        {
-            _repository = repository;
-        }
-        [HttpPost]
-        public async Task<IActionResult> AddStatus([FromBody] Status status)
-        {
-            await _repository.AddStatusAsync(status);
+        private readonly IMediator _mediator;
 
-            return CreatedAtAction(nameof(GetAll), new { id = status.Id }, status);
+        public StatusController(IMediator mediator)
+        {
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<Status>>> GetAllStatus()
         {
-            var statuses = await _repository.GetAllAsync();
-            return Ok(statuses);
+            var status = await _mediator.Send(new GetAllStatusRequest());
+            return Ok(status);
+        }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Status>> GetStatus(int id)
+        {
+            var status = await _mediator.Send(new GetStatusRequest { Id = id });
+
+            if (status == null)
+                return NotFound();
+
+            return Ok(status);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Status>> CreateStatus([FromBody] CreateStatusRequest request)
+        {
+            var createdStatus = await _mediator.Send(request);
+                     
+            if (createdStatus == null)
+                return BadRequest();
+
+            return CreatedAtAction(nameof(GetStatus), new { id = createdStatus.Id }, createdStatus);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Status>> UpdateStatus(int id, [FromBody] UpdateStatusRequest request)
+        {
+            if (id != request.Id)
+                return BadRequest("ID mismatch");
+
+            var updatedStatus = await _mediator.Send(request);
+                       
+            if (updatedStatus == null)
+                return NotFound();
+
+            return Ok(updatedStatus);
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteStatus(int id)
+        public async Task<ActionResult> DeleteStatus(int id)
         {
-            // Check if the status exists
-            var status = await _repository.GetByIdAsync(id);
-            if (status == null)
-            {
-                return NotFound(); // Return 404 if the status is not found
-            }
+            var result = await _mediator.Send(new DeleteStatusRequest { Id = id });
 
-            // Delete the status
-            await _repository.DeleteStatusAsync(id);
+            if (!result)
+                return NotFound();
 
-            // Return a 204 No Content response to indicate successful deletion
             return NoContent();
-        }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var status = await _repository.GetByIdAsync(id);
-            return Ok(status);
         }
     }
 }

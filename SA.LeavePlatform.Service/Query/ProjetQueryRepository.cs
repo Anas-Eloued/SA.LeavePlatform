@@ -36,7 +36,13 @@ namespace SA.LeavePlatform.Service.Query
                 await dbContext.SaveChangesAsync();
             }
         }
+        public async Task UpdateProjetAsync(Projet projet)
+        {
+            dbContext.Projets.Update(projet);
+            dbContext.Entry(projet).Property(e => e.Id).IsModified = false;
 
+            await dbContext.SaveChangesAsync();
+        }
         public void AddProjet(Projet projet)
         {
             throw new NotImplementedException();

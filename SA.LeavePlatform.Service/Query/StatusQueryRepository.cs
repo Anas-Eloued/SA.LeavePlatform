@@ -29,6 +29,13 @@ namespace SA.LeavePlatform.Service.Query
         {
             return await dbContext.Statuses.FindAsync(id) ?? throw new KeyNotFoundException("Status not found");
         }
+        public async Task UpdateRoleAsync(Status status)
+        {
+            dbContext.Statuses.Update(status);
+            dbContext.Entry(status).Property(e => e.Id).IsModified = false;
+
+            await dbContext.SaveChangesAsync();
+        }
 
         public async Task DeleteStatusAsync(int id)
         {
@@ -38,6 +45,11 @@ namespace SA.LeavePlatform.Service.Query
                 dbContext.Statuses.Remove(status);
                 await dbContext.SaveChangesAsync();
             }
+        }
+
+        public Task UpdateStatusAsync(Status status)
+        {
+            throw new NotImplementedException();
         }
     }
 }

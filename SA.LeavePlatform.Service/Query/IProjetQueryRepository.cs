@@ -9,5 +9,7 @@ namespace SA.LeavePlatform.Service.Query
         Task AddProjetAsync(Projet projet);
         Task<Projet> GetByIdAsync(int id); // Add this method
         Task DeleteProjetAsync(int id); // Add this method
+        Task UpdateProjetAsync(Projet projet);
+
     }
 }

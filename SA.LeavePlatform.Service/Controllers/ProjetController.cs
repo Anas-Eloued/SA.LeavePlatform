@@ -1,52 +1,74 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SA.LeavePlatform.Domain.Entities;
-using SA.LeavePlatform.Service.Query;
+using SA.LeavePlatform.Service.MediatRrequests.ProjetRequests;
+using System.Threading.Tasks;
 
 namespace SA.LeavePlatform.Service.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class ProjetController : ControllerBase
     {
-        private readonly IProjetQueryRepository _repository;
-        public ProjetController(IProjetQueryRepository repository)
-        {
-            _repository = repository;
-        }
-        [HttpPost]
-        public async Task<IActionResult> AddProjet([FromBody] Projet projet)
-        {
-            await _repository.AddProjetAsync(projet);
+        private readonly IMediator _mediator;
 
-            return CreatedAtAction(nameof(GetAll), new { id = projet.Id }, projet);
-        }
-        [HttpDelete("{id}")]    
-        public async Task<IActionResult> DeleteProjet(int id)
+        public ProjetController(IMediator mediator)
         {
-            var projet = await _repository.GetByIdAsync(id);
-            if (projet == null)
-            {
-                return NotFound(); // Return 404 if the status is not found
-            }
-
-            // Delete the status
-            await _repository.DeleteProjetAsync(id);
-
-            // Return a 204 No Content response to indicate successful deletion
-            return NoContent();
+            _mediator = mediator;
         }
+
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<Projet>>> GetAllProjets()
         {
-            var projets = await _repository.GetAllAsync();
+            var projets = await _mediator.Send(new GetAllProjetRequest());
             return Ok(projets);
         }
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<ActionResult<Projet>> GetProjet(int id)
         {
-            var projet = await _repository.GetByIdAsync(id);
+            var projet = await _mediator.Send(new GetProjetRequest { Id = id });
+
+            if (projet == null)
+                return NotFound();
+
             return Ok(projet);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Projet>> CreateProjet([FromBody] CreateProjetRequest request)
+        {
+            var createdProjet = await _mediator.Send(request);
+
+            if (createdProjet == null)
+                return BadRequest();
+
+            return CreatedAtAction(nameof(GetProjet), new { id = createdProjet.Id }, createdProjet);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Projet>> UpdateProjet(int id, [FromBody] UpdateProjetRequest request)
+        {
+            if (id != request.Id)
+                return BadRequest("ID mismatch");
+
+            var updatedProjet = await _mediator.Send(request);
+
+            if (updatedProjet == null)
+                return NotFound();
+
+            return Ok(updatedProjet);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteProjet(int id)
+        {
+            var result = await _mediator.Send(new DeleteProjetRequest { Id = id });
+
+            if (!result)
+                return NotFound();
+
+            return NoContent();
         }
     }
 }

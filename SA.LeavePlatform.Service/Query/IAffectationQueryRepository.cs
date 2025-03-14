@@ -9,5 +9,6 @@ namespace SA.LeavePlatform.Service.Query
         Task AddAffectationAsync(Affectation affectation);
         Task<Affectation> GetByIdAsync(int id); // Add this method
         Task DeleteAffectationAsync(int id); // Add this method
+        Task UpdateAffectationAsync(Affectation affectation);
     }
 }

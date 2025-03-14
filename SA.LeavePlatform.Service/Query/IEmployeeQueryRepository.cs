@@ -9,6 +9,6 @@ namespace SA.LeavePlatform.Service.Query
         Task AddEmployeeAsync(Employee employee);
         Task<Employee> GetByIdAsync(int id); // Add this method
         Task DeleteEmployeeAsync(int id); // Add this method
-        Task UpdateAsync(Employee employee);
+        Task UpdateEmployeeAsync(Employee employee);
     }
 }

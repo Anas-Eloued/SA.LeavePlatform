@@ -10,8 +10,8 @@ namespace SA.LeavePlatform.Domain.Entities
     public class LeaveDoc
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Path { get; set; }
+        public string? Name { get; set; }
+        public string? Path { get; set; }
         public int LeaveRequestId { get; set; }
         [JsonIgnore]
         public virtual LeaveRequest? LeaveRequest { get; set; }

@@ -27,7 +27,15 @@ namespace SA.LeavePlatform.Service.Query
         {
             return await dbContext.LeaveDocs.FindAsync(id) ?? throw new KeyNotFoundException("Leave Document not found");
         }
+        public async Task UpdateLeaveDocAsync(LeaveDoc leaveDoc)
+        {
+            dbContext.LeaveDocs.Update(leaveDoc);
 
+            // S'assurer que l'ID n'est pas modifié
+            dbContext.Entry(leaveDoc).Property(e => e.Id).IsModified = false;
+
+            await dbContext.SaveChangesAsync();
+        }
         public async Task DeleteLeaveDocAsync(int id)
         {
             var leaveDoc = await dbContext.LeaveDocs.FindAsync(id);

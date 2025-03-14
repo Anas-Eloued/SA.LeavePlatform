@@ -30,6 +30,15 @@ namespace SA.LeavePlatform.Service.Query
         {
             return await dbContext.Affectations.FindAsync(id) ?? throw new KeyNotFoundException("Affectation not found");
         }
+        public async Task UpdateAffectationAsync(Affectation affectation)
+        {
+            dbContext.Affectations.Update(affectation);
+
+            // S'assurer que l'ID n'est pas modifié
+            dbContext.Entry(affectation).Property(e => e.Id).IsModified = false;
+
+            await dbContext.SaveChangesAsync();
+        }
 
         public async Task DeleteAffectationsAsync(int id)
         {

@@ -41,7 +41,7 @@ namespace SA.LeavePlatform.Service.Query
                 await dbContext.SaveChangesAsync();
             }
         }
-        public async Task UpdateAsync(Employee employee)
+        public async Task UpdateEmployeeAsync(Employee employee)
         {
             dbContext.Employees.Update(employee);
 
